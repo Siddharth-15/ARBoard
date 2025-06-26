@@ -1,0 +1,384 @@
+/* css/style.css */
+/* Fonts are imported in theme.css */
+
+/* --- BACKGROUND ENHANCEMENTS --- */
+#particles-js {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: -1; /* Behind content, but above a plain body background color */
+    background-color: var(--bg-primary); /* Match body background */
+}
+
+
+/* --- HEADER --- */
+.main-header {
+    background-color: var(--header-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 1020; /* High z-index for header */
+    padding: 0.75rem 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+.main-header .navbar-brand {
+    font-family: var(--heading-font);
+    font-weight: 700;
+    font-size: 1.75rem;
+    color: var(--text-primary);
+    transition: color 0.2s ease;
+}
+.main-header .navbar-brand span.fw-light {
+    color: var(--text-secondary);
+    font-weight: 400 !important;
+}
+.main-header .navbar-brand:hover {
+    color: var(--orange-primary);
+}
+.main-header .navbar-brand:hover span.fw-light {
+    color: var(--orange-primary);
+    opacity: 0.8;
+}
+.main-header .nav-link {
+    font-family: var(--heading-font);
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin: 0 0.75rem;
+    padding: 0.5rem 0.25rem !important;
+    position: relative;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.main-header .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--orange-primary);
+    transition: width 0.3s ease;
+}
+.main-header .nav-link:hover,
+.main-header .nav-link.active {
+    color: var(--orange-primary) !important;
+}
+.main-header .nav-link:hover::after,
+.main-header .nav-link.active::after {
+    width: 100%;
+}
+.profile-pic-nav {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid var(--orange-secondary);
+    object-fit: cover;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.profile-pic-nav:hover {
+    transform: scale(1.1);
+    border-color: var(--orange-primary);
+}
+.theme-toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    line-height: 1;
+}
+.theme-toggle-btn:hover {
+    color: var(--orange-primary);
+}
+
+
+/* --- HERO SECTION --- */
+/* css/style.css */
+
+/* --- HERO SECTION --- */
+.hero-section {
+    min-height: calc(90vh - 70px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hero Aura (keep as is) */
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: clamp(300px, 70vw, 900px);
+    height: clamp(300px, 70vw, 900px);
+    transform: translate(-50%, -50%);
+    background: radial-gradient(ellipse at center, var(--orange-glow-soft) 0%, transparent 60%);
+    border-radius: 50%;
+    opacity: 0.5;
+    z-index: 0;
+    animation: hero-aura-pulse 10s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+[data-theme="light"] .hero-section::before {
+    opacity: 0.3;
+    background: radial-gradient(ellipse at center, rgba(255, 160, 0, 0.15) 0%, transparent 60%);
+}
+/* Keyframes for hero-aura-pulse (keep as is) */
+@keyframes hero-aura-pulse {
+    0% { transform: translate(-50%, -50%) scale(0.9); opacity: var(--aura-opacity-start, 0.4); }
+    100% { transform: translate(-50%, -50%) scale(1.1); opacity: var(--aura-opacity-end, 0.6); }
+}
+[data-theme="dark"] .hero-section::before { --aura-opacity-start: 0.5; --aura-opacity-end: 0.7; }
+[data-theme="light"] .hero-section::before { --aura-opacity-start: 0.2; --aura-opacity-end: 0.4; }
+
+
+.hero-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* NEW STYLES FOR COMPLEX HERO TITLE */
+.hero-title-complex {
+    margin-bottom: 2.5rem; /* Space before buttons */
+    /* Add any other wrapper styles if needed */
+}
+
+.hero-title-line1,
+.hero-title-line2 {
+    font-size: clamp(2.8rem, 7vw, 5rem); /* Same as original hero-title */
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1; /* Adjust line height for tighter packing if needed */
+    display: block; /* Ensure they are block level for margin/padding control */
+}
+
+.hero-tagline-interleaved {
+    font-size: clamp(1rem, 2vw, 1.25rem); /* Slightly smaller than original tagline */
+    color: var(--text-secondary);
+    max-width: 600px; /* Constrain width */
+    margin: 0.5rem auto 0.75rem; /* Top/bottom margin for spacing, auto for horizontal centering */
+    line-height: 1.6;
+    padding: 0 1rem; /* Add some horizontal padding if needed */
+}
+
+/* Original hero-title and hero-tagline styles can be removed or commented out if no longer used directly */
+/*
+.hero-section .hero-title { ... }
+.hero-section .hero-tagline { ... }
+*/
+
+.hero-buttons .btn {
+    margin: 0.6rem;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+}
+/* --- GENERAL SECTION STYLING --- */
+.section {
+    padding: 80px 0;
+    /* background-color: var(--bg-primary); /* Can be removed if particles bg covers all */
+    position: relative; /* For z-indexing against fixed particles */
+    z-index: 1; /* To be above the #particles-js layer */
+}
+.section-title {
+    text-align: center;
+    margin-bottom: 60px;
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    position: relative;
+    padding-bottom: 20px;
+}
+.section-title .text-orange {
+    color: var(--orange-primary) !important;
+}
+.section-title::after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 70px;
+    height: 3px;
+    background: var(--orange-primary);
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
+/* --- HOW IT WORKS & OTHER SECTIONS --- */
+.bg-dynamic-subtle {
+    background-color: var(--bg-subtle) !important; /* This section gets its own bg over particles */
+}
+.how-it-works-card {
+    background-color: var(--bg-secondary);
+    padding: 30px 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    border-left: 4px solid var(--orange-secondary);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.how-it-works-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08), 0 0 15px var(--orange-glow-soft);
+}
+.how-it-works-card .card-icon-top img {
+    height: 40px;
+    margin-bottom: 15px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.how-it-works-card:hover .card-icon-top img {
+    opacity: 1;
+    transform: scale(1.1) rotate(-5deg);
+}
+.how-it-works-card .step-number-alt {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: var(--heading-font);
+    color: var(--orange-primary);
+    margin-bottom: 10px;
+}
+.how-it-works-card h4 {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+.how-it-works-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    flex-grow: 1;
+}
+
+/* Vision/About Section Image */
+.futuristic-image-border {
+    border: 1px solid var(--border-color);
+    padding: 6px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.futuristic-image-border:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.1), 0 0 20px var(--orange-glow-soft);
+}
+.futuristic-image-border img {
+    border-radius: 4px; /* Inner radius for the image itself */
+    display: block; /* Fix potential bottom space under image */
+}
+
+
+/* Video Tutorial Section */
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    background: #000;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+[data-theme="dark"] .video-container {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 20px var(--orange-glow-soft);
+}
+.video-container iframe,
+.video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* --- FOOTER --- */
+.main-footer {
+    background-color: var(--bg-secondary);
+    color: var(--text-muted);
+    padding: 60px 0 30px;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    position: relative; /* For z-indexing against fixed particles */
+    z-index: 1; /* To be above the #particles-js layer */
+}
+.main-footer .footer-logo {
+    max-height: 40px;
+    opacity: 0.8;
+}
+.main-footer h5 {
+    font-family: var(--heading-font);
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.main-footer ul {
+    list-style: none;
+    padding-left: 0;
+}
+.main-footer ul li a {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 5px 0;
+    display: inline-block;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+.main-footer ul li a:hover {
+    color: var(--orange-primary);
+    transform: translateX(3px);
+}
+.social-icons-footer {
+    gap: 15px;
+}
+.social-icons-footer img {
+    height: 22px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.social-icons-footer a:hover img {
+    opacity: 1;
+    transform: scale(1.15) translateY(-2px);
+    filter: drop-shadow(0 0 4px var(--orange-glow-soft));
+}
+
+/* Scroll to Top Button */
+.scroll-to-top-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: var(--orange-primary);
+    color: white;
+    width: 45px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    display: none;
+    opacity: 0;
+    z-index: 999;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15), 0 0 10px var(--orange-glow-soft);
+    transition: all 0.3s ease;
+}
+.scroll-to-top-btn:hover {
+    background-color: var(--orange-secondary);
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2), 0 0 15px var(--orange-glow);
+    color: white;
+}
