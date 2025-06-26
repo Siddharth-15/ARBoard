@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Space - AR Whiteboard Dashboard</title>
+    <!-- CSS Links (Same as index.html & about.html) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="assets/images/favicon-arw.png" type="image/png">
+
+    <!-- Specific styles for profile page -->
+    <style>
+        .page-hero-section { 
+            padding: 70px 0 50px;
+            background-color: var(--bg-subtle);
+            text-align: center;
+        }
+        .page-hero-section .page-title {
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .page-hero-section .page-subtitle {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto 1rem;
+        }
+        .profile-details-card {
+            background-color: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+            margin-bottom: 30px;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--orange-primary);
+            margin-bottom: 20px;
+        }
+        .profile-details-card h3 {
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+        .profile-details-card .email {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            display: block;
+        }
+        .session-stats span {
+            display: block;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+        .session-stats strong {
+            font-size: 2rem;
+            color: var(--orange-primary);
+            display: block;
+            margin-bottom: 5px;
+        }
+        .session-filter-nav .nav-link {
+            color: var(--text-secondary);
+            border: 2px solid transparent;
+            border-bottom-color: var(--border-color);
+            padding: 0.75rem 1.5rem;
+            margin: 0 5px;
+            border-radius: 6px 6px 0 0;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .session-filter-nav .nav-link.active,
+        .session-filter-nav .nav-link:hover {
+            color: var(--orange-primary);
+            border-color: var(--orange-primary);
+            background-color: var(--bg-secondary);
+        }
+        .filter-tagline {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: -5px;
+            margin-bottom: 25px;
+            display: none;
+        }
+        .filter-tagline.active {
+            display: block;
+        }
+        .session-card {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--orange-secondary);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .session-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08), 0 0 10px var(--orange-glow-soft);
+        }
+        .session-card h5 {
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        .session-card .session-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+        .session-card .session-meta strong {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .session-card .btn-sm {
+            padding: 0.25rem 0.6rem;
+            font-size: 0.8rem;
+        }
+        .session-card .btn-delete-session {
+            color: var(--bs-danger); 
+            border-color: var(--bs-danger);
+        }
+        .session-card .btn-delete-session:hover {
+            background-color: var(--bs-danger);
+            color: white;
+        }
+        .no-sessions {
+            text-align: center;
+            padding: 40px;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <header class="main-header">
+        <nav class="navbar navbar-expand-lg container">
+            <a class="navbar-brand" href="index.html">AR <span class="fw-light">WHITEBOARD</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">Explore</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Connect</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="profile.html">My Space</a></li>
+                    <li class="nav-item"><a class="btn btn-futuristic-outline btn-sm mx-2" href="login.html">Access Portal</a></li>
+                    <li class="nav-item" id="userProfileNavItem">
+                        <a href="profile.html"><img src="assets/images/team-member-placeholder.png" alt="Profile" class="profile-pic-nav"></a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="themeToggleBtn" class="theme-toggle-btn ms-2" aria-label="Toggle theme"></button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <section class="page-hero-section">
+        <div class="container">
+            <h1 class="page-title" style="animation: fadeInDown 0.8s ease-out;">Welcome, <span class="text-orange-gradient" id="userNamePlaceholder">InnovatorX</span>!</h1>
+            <p class="page-subtitle" style="animation: fadeInUp 0.8s ease-out 0.2s;">This is your personal AR Whiteboard dashboard. Manage your sessions and profile.</p>
+        </div>
+    </section>
+
+    <section id="dashboard-content" class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="profile-details-card" style="animation: fadeInLeft 1s ease-out;">
+                        <img src="assets/images/team-member-placeholder.png" alt="User Avatar" class="profile-avatar" id="userAvatar">
+                        <h3 id="userFullName">Innovator Xero</h3>
+                        <span class="email" id="userEmail">innovator.x@example.com</span>
+                        <div class="row text-center session-stats">
+                            <div class="col-6">
+                                <strong id="hostedSessionsCount">0</strong>
+                                <span>Hosted Sessions</span>
+                            </div>
+                            <div class="col-6">
+                                <strong id="joinedSessionsCount">0</strong>
+                                <span>Joined Sessions</span>
+                            </div>
+                        </div>
+                        <hr class="my-4">
+                        <a href="#" class="btn btn-futuristic-outline w-100">Edit Profile</a>
+                    </div>
+                </div>
+
+                <div class="col-lg-8" style="animation: fadeInRight 1s ease-out 0.2s;">
+                    <ul class="nav nav-tabs session-filter-nav mb-3" id="sessionFilterTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="hosted-tab" data-bs-toggle="tab" data-bs-target="#hosted-sessions" type="button" role="tab" aria-controls="hosted-sessions" aria-selected="true">As Host</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="participant-tab" data-bs-toggle="tab" data-bs-target="#participant-sessions" type="button" role="tab" aria-controls="participant-sessions" aria-selected="false">As Participant</button>
+                        </li>
+                    </ul>
+                    <p class="filter-tagline active" id="hosted-tagline">Viewing sessions you've hosted.</p>
+                    <p class="filter-tagline" id="participant-tagline">Viewing sessions you've participated in.</p>
+
+                    <div class="tab-content" id="sessionTabsContent">
+                        <div class="tab-pane fade show active" id="hosted-sessions" role="tabpanel" aria-labelledby="hosted-tab">
+                            <div class="no-sessions-placeholder">Loading saved sessions...</div>
+                        </div>
+                        <div class="tab-pane fade" id="participant-sessions" role="tabpanel" aria-labelledby="participant-tab">
+                             <div class="no-sessions-placeholder">Loading sessions you participated in...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-4 col-md-12 text-center text-lg-start">
+                    <img src="assets/images/logo-footer.png" alt="AR Whiteboard Logo" class="footer-logo mb-3">
+                    <p class="small text-muted">© <span id="currentYear"></span> AR Whiteboard Inc. All Rights Reserved.<br>Innovate. Augment. Inspire.</p>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h5>Navigate</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">Explore Tech</a></li>
+                        <li><a href="contact.html">Connect</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h5>Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h5>Legal</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h5>Social</h5>
+                    <ul class="list-unstyled d-flex social-icons-footer">
+                        <li><a href="#" aria-label="LinkedIn"><img src="assets/icons/linkedin-futuristic.svg" alt="LinkedIn"></a></li>
+                        <li><a href="#" aria-label="Twitter"><img src="assets/icons/twitter-futuristic.svg" alt="Twitter"></a></li>
+                        <li><a href="#" aria-label="Github"><img src="assets/icons/github-futuristic.svg" alt="Github"></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <a href="#" class="scroll-to-top-btn" id="scrollToTopBtn" aria-label="Scroll to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/theme-switcher.js"></script>
+    <script src="js/main.js"></script> 
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("profile.html: DOMContentLoaded");
+
+            const hostedSessionsContainer = document.getElementById('hosted-sessions');
+            const participantSessionsContainer = document.getElementById('participant-sessions');
+            const hostedSessionsCountSpan = document.getElementById('hostedSessionsCount');
+
+            function displaySavedSessions() {
+                if (!hostedSessionsContainer) {
+                    console.error("profile.html: hosted-sessions container not found!");
+                    return;
+                }
+
+                const savedSessions = JSON.parse(localStorage.getItem('arWhiteboardSessions')) || [];
+                console.log("profile.html: Found saved sessions in localStorage:", savedSessions);
+
+                hostedSessionsContainer.innerHTML = '';
+                
+                if (savedSessions.length === 0) {
+                    hostedSessionsContainer.innerHTML = '<div class="no-sessions">You haven\'t hosted any sessions yet. Click "Launch New Session" on the homepage to start!</div>';
+                    if (hostedSessionsCountSpan) hostedSessionsCountSpan.textContent = '0';
+                    return;
+                }
+
+                if (hostedSessionsCountSpan) hostedSessionsCountSpan.textContent = savedSessions.length;
+
+                savedSessions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                savedSessions.forEach(session => {
+                    const sessionCard = document.createElement('div');
+                    sessionCard.classList.add('session-card');
+
+                    const lastEditedDate = new Date(session.timestamp);
+                    const formattedDate = `${lastEditedDate.toLocaleDateString()} - ${lastEditedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                    
+                    sessionCard.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5>${escapeHTML(session.name)}</h5>
+                                <div class="session-meta">Hosted by: <strong>You</strong></div>
+                                <div class="session-meta">Last Saved: <strong>${formattedDate}</strong></div>
+                            </div>
+                            <div class="mt-1">
+                                <a href="session.html?session_id=${encodeURIComponent(session.id)}&action=load" class="btn btn-futuristic-outline btn-sm me-2 btn-view-session">View</a>
+                                <button class="btn btn-outline-danger btn-sm btn-delete-session" data-session-id="${session.id}" title="Delete Session">×</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    const deleteButton = sessionCard.querySelector('.btn-delete-session');
+                    if (deleteButton) {
+                        deleteButton.addEventListener('click', handleDeleteSession);
+                    }
+                    hostedSessionsContainer.appendChild(sessionCard);
+                });
+            }
+
+            function handleDeleteSession(event) {
+                const sessionIdToDelete = event.target.dataset.sessionId;
+                if (!sessionIdToDelete) return;
+                
+                // Find the session name for a nicer confirmation message
+                let sessionNameToDelete = "this session";
+                const cardElement = event.target.closest('.session-card');
+                if (cardElement) {
+                    const titleElement = cardElement.querySelector('h5');
+                    if (titleElement) {
+                        sessionNameToDelete = `session "${titleElement.textContent}"`;
+                    }
+                }
+
+                if (confirm(`Are you sure you want to delete ${sessionNameToDelete}? This action cannot be undone.`)) {
+                    console.log('profile.html: Deleting session (from localStorage):', sessionIdToDelete);
+                    
+                    let savedSessions = JSON.parse(localStorage.getItem('arWhiteboardSessions')) || [];
+                    savedSessions = savedSessions.filter(session => session.id !== sessionIdToDelete);
+                    
+                    try {
+                        localStorage.setItem('arWhiteboardSessions', JSON.stringify(savedSessions));
+                        displaySavedSessions(); 
+                        alert("Session deleted locally.");
+                    } catch (e) {
+                        console.error("profile.html: Error deleting session from localStorage", e);
+                        alert("Could not delete session locally.");
+                    }
+                }
+            }
+
+            function escapeHTML(str) {
+                if (str === null || str === undefined) return '';
+                return str.toString()
+                    .replace(/&/g, "&")
+                    .replace(/</g, "<")
+                    .replace(/>/g, ">")
+                    .replace(/"/g, "''")
+                    .replace(/'/g, "'"); // CORRECTED
+            }
+
+            displaySavedSessions();
+
+            const hostedTab = document.getElementById('hosted-tab');
+            const participantTab = document.getElementById('participant-tab');
+            const hostedTagline = document.getElementById('hosted-tagline');
+            const participantTagline = document.getElementById('participant-tagline');
+
+            if(hostedTab && participantTab && hostedTagline && participantTagline) {
+                hostedTab.addEventListener('shown.bs.tab', function () {
+                    hostedTagline.classList.add('active');
+                    participantTagline.classList.remove('active');
+                });
+                participantTab.addEventListener('shown.bs.tab', function () {
+                    participantTagline.classList.add('active');
+                    hostedTagline.classList.remove('active');
+                    if(participantSessionsContainer) { 
+                         participantSessionsContainer.innerHTML = ''; // Clear it
+                         participantSessionsContainer.innerHTML = '<div class="no-sessions">Displaying participant sessions is not yet implemented in this demo.</div>';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark"> <!-- Defaulting to dark as per your screenshot -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Whiteboard - Illuminate Your Ideas</title>
+    <!-- 1. BOOTSTRAP CSS FIRST -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 2. YOUR CUSTOM CSS FILES AFTER BOOTSTRAP -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Favicon: A stylized 'ARW' monogram or an abstract orange geometric shape -->
+    <link rel="icon" href="assets/images/favicon-arw.png" type="image/png"> <!-- Make sure you have this image -->
+</head>
+<body>
+    <div class="animated-bg-grid"></div> <!-- Animated grid background -->
+    <div id="particles-js"></div> <!-- Particle background container -->
+
+    <!-- Header -->
+    <header class="main-header">
+        <nav class="navbar navbar-expand-lg container">
+            <a class="navbar-brand" href="index.html">AR <span class="fw-light">WHITEBOARD</span></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span> <!-- Consider custom icon later if Bootstrap default is not ideal -->
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">Explore</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Connect</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profile.html">My Space</a></li>
+                    <li class="nav-item"><a class="btn btn-futuristic-outline btn-sm mx-2" href="login.html">Access Portal</a></li>
+                    <li class="nav-item d-none" id="userProfileNavItem">
+                        <a href="profile.html"><img src="assets/icons/icons8-user-50.png" alt="Profile" class="profile-pic-nav"></a> <!-- Placeholder icon -->
+                    </li>
+                    <li class="nav-item">
+                        <button id="themeToggleBtn" class="theme-toggle-btn ms-2" aria-label="Toggle theme">
+                            <!-- Icon will be set by JS (js/theme-switcher.js) -->
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+   <!-- Hero Section -->
+    <section class="hero-section text-center">
+    <div class="container">
+        <div class="hero-title-complex"> <!-- New wrapper for complex title -->
+            <div class="hero-title-line1" style="animation: fadeInDown 1s ease-out;">AUGMENT YOUR</div>
+            <p class="hero-tagline-interleaved" style="animation: zoomIn 0.8s ease-out 0.4s; animation-fill-mode: backwards;">
+                <div class="hero-title-line2 text-orange-gradient" style="animation: fadeInUp 1s ease-out 0.2s; animation-fill-mode: backwards;">CANVAS</div>
+                Real-time collaboration meets immersive augmented reality. <br>Transform ideas into shared experiences.
+            </p>
+            
+        </div>
+            <div class="hero-buttons mt-4" style="animation: zoomIn 0.8s ease-out 0.8s; animation-fill-mode: backwards;">
+            <a href="session.html?action=host" class="btn btn-futuristic btn-lg mx-2">Launch New Session</a>
+            <a href="#joinSessionModal" data-bs-toggle="modal" class="btn btn-futuristic-outline btn-lg mx-2">Enter Session ID</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- "The Vision" Section -->
+    <section id="home-vision" class="section">
+        <div class="container">
+            <h2 class="section-title">The <span class="text-orange">Vision</span></h2>
+            <div class="row align-items-center gx-5">
+                <div class="col-lg-6 mb-4 mb-lg-0" style="animation: fadeInLeft 1s ease-out;">
+                    <div class="futuristic-image-border">
+                        <img src="assets/images/image1.jpeg" alt="Conceptual AR Collaboration" class="img-fluid"> <!-- Placeholder image -->
+                    </div>
+                </div>
+                <div class="col-lg-6" style="animation: fadeInRight 1s ease-out;">
+                    <h3 class="fw-bold mb-3">Where Ideas Transcend Dimensions.</h3>
+                    <p class="fs-5 text-secondary mb-3">AR Whiteboard isn't just a tool; it's a new paradigm for creative synergy. We empower teams to break free from flat screens and immerse themselves in a shared, dynamic workspace.</p>
+                    <p class="text-secondary">Visualize, annotate, and iterate in real-time, then project your collective canvas into the world around you. Experience the true power of augmented collaboration.</p>
+                    <a href="about.html" class="btn btn-futuristic-outline mt-3">Discover the Tech</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="section bg-dynamic-subtle">
+        <div class="container">
+            <h2 class="section-title">Simple Steps, <span class="text-orange">Limitless Potential</span></h2>
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-6 col-lg-3 d-flex">
+                    <div class="how-it-works-card w-100" style="animation: fadeInUp 1s ease-out 0.2s; animation-fill-mode: backwards;">
+                        <div class="card-icon-top mb-3"><img src="assets/icons/launch-session.svg" alt="Launch" height="40"></div> <!-- Placeholder icon -->
+                        <div class="step-number-alt">01</div>
+                        <h4>Initiate or Join</h4>
+                        <p>Launch a new board with a click, or enter a unique ID to join an existing session.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 d-flex">
+                    <div class="how-it-works-card w-100" style="animation: fadeInUp 1s ease-out 0.4s; animation-fill-mode: backwards;">
+                         <div class="card-icon-top mb-3"><img src="assets/icons/collaborate-realtime.svg" alt="Collaborate" height="40"></div> <!-- Placeholder icon -->
+                        <div class="step-number-alt">02</div>
+                        <h4>Co-Create Live</h4>
+                        <p>Sketch, type, add shapes. See every update from your team instantly on the shared canvas.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 d-flex">
+                    <div class="how-it-works-card w-100" style="animation: fadeInUp 1s ease-out 0.6s; animation-fill-mode: backwards;">
+                        <div class="card-icon-top mb-3"><img src="assets/icons/ar-projection.svg" alt="AR View" height="40"></div> <!-- Placeholder icon -->
+                        <div class="step-number-alt">03</div>
+                        <h4>Augment Reality</h4>
+                        <p>Participants can project the live whiteboard into their physical space for an immersive review.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Tutorial Section -->
+    <section id="tutorial" class="section">
+        <div class="container">
+            <h2 class="section-title">Witness the <span class="text-orange">Flow</span></h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-9 col-xl-8">
+                    <div class="video-container shadow-xl-orange-glow">
+                        <video controls poster="assets/images/tutorial-poster-dynamic.jpg" style="border-radius: 8px;"> <!-- Placeholder poster -->
+                            <source src="assets/videos/ar-whiteboard-tutorial.mp4" type="video/mp4"> <!-- Placeholder video -->
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-4 col-md-12 text-center text-lg-start">
+                    <img src="assets/images/Ar logo.jpeg" alt="AR Whiteboard Logo" class="footer-logo mb-3"> <!-- Placeholder logo -->
+                    <p class="small text-muted">© <span id="currentYear"></span> AR Whiteboard Inc. All Rights Reserved.<br>Innovate. Augment. Inspire.</p>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h5>Navigate</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="about.html">Explore Tech</a></li>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="profile.html">My Space</a></li>
+                        <li><a href="contact.html">Connect</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h5>Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h5>Legal</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h5>Social</h5>
+                    <ul class="list-unstyled d-flex social-icons-footer">
+                        <li><a href="#" aria-label="LinkedIn"><img src="assets/icons/linkedin-futuristic.svg" alt="LinkedIn"></a></li> <!-- Placeholder icon -->
+                        <li><a href="#" aria-label="Twitter"><img src="assets/icons/twitter-futuristic.svg" alt="Twitter"></a></li> <!-- Placeholder icon -->
+                        <li><a href="#" aria-label="Github"><img src="assets/icons/github-futuristic.svg" alt="Github"></a></li> <!-- Placeholder icon -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <a href="#" class="scroll-to-top-btn" id="scrollToTopBtn" aria-label="Scroll to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    </a>
+
+    <!-- Join Session Modal (Bootstrap) -->
+    <div class="modal fade" id="joinSessionModal" tabindex="-1" aria-labelledby="joinSessionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content futuristic-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="joinSessionModalLabel">Enter <span class="text-orange">Session Portal</span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> <!-- Bootstrap handles dark/light theming of this button if its variables are set correctly -->
+                </div>
+                <div class="modal-body">
+                    <form id="joinSessionForm">
+                        <div class="mb-3">
+                            <label for="sessionCodeInput" class="form-label">Session ID</label>
+                            <input type="text" class="form-control futuristic-input" id="sessionCodeInput" placeholder="e.g., AXR-7G42" required>
+                        </div>
+                         <div class="mb-3">
+                            <label for="joinerNameInput" class="form-label">Your Alias</label>
+                            <input type="text" class="form-control futuristic-input" id="joinerNameInput" placeholder="e.g., InnovatorX" required>
+                        </div>
+                        <button type="submit" class="btn btn-futuristic w-100 mt-2">Connect to Session</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+    <script src="js/particles.min.js"></script> <!-- Ensure you have this file -->
+    <script src="js/theme-switcher.js"></script> <!-- Ensure you have this file -->
+    <script src="js/main.js"></script>
+</body>
+</html>

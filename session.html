@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark"> <!-- Or light, should be user's preference -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> <!-- user-scalable=no for AR stability -->
+    <title>AR Whiteboard Session - [Session Name Placeholder]</title>
+    <!-- CSS Links -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/style.css"> <!-- Re-use general styles -->
+    <link rel="icon" href="assets/images/favicon-arw.png" type="image/png">
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+    <!-- Specific styles for session page -->
+    <style>
+        body, html { height: 100%; margin: 0; overflow: hidden; /* Crucial for full-page canvas */ }
+
+        .session-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: var(--bg-primary); /* Base background */
+        }
+
+        /* --- Main Toolbar --- */
+        .main-toolbar {
+            background-color: var(--bg-secondary);
+            padding: 0.6rem 1rem; /* Slightly more padding */
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap; /* Allow wrapping on very small screens */
+            gap: 0.75rem; /* Space between tool groups/buttons */
+            z-index: 100; /* Above canvas */
+        }
+        .main-toolbar .toolbar-brand {
+            font-family: var(--heading-font);
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--orange-primary);
+            margin-right: 1.5rem;
+            text-decoration: none;
+        }
+        .main-toolbar .toolbar-brand:hover {
+            color: var(--orange-secondary);
+        }
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem; /* Space between buttons within a group */
+            padding: 0 0.5rem;
+            position: relative;
+        }
+        .tool-group:not(:last-child)::after { /* Subtle separator lines */
+            content: '';
+            position: absolute;
+            right: -0.4rem; /* Position relative to the gap */
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 1px;
+            background-color: var(--border-color);
+            opacity: 0.7;
+        }
+        .main-toolbar .btn-tool {
+            background-color: transparent;
+            border: 1px solid transparent; /* Keep space, make visible on active/hover */
+            color: var(--text-secondary);
+            padding: 0.4rem 0.5rem; /* Smaller padding for tool buttons */
+            font-size: 0.9rem; /* Smaller icon/text size */
+            line-height: 1;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .main-toolbar .btn-tool:hover {
+            background-color: var(--bg-subtle);
+            color: var(--orange-primary);
+            border-color: var(--border-color);
+        }
+        .main-toolbar .btn-tool.active {
+            background-color: var(--orange-primary);
+            color: white;
+            border-color: var(--orange-primary);
+            box-shadow: 0 0 8px var(--orange-glow-soft);
+        }
+        .main-toolbar .btn-tool img, .main-toolbar .btn-tool svg { /* Icon styling */
+            width: 18px; height: 18px;
+            vertical-align: middle;
+        }
+        .main-toolbar input[type="color"] {
+            width: 32px; height: 32px; padding: 2px; border-radius: 4px; border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        .main-toolbar .form-range { width: 80px; }
+
+
+        /* --- Canvas Area --- */
+        .canvas-area {
+            flex-grow: 1; /* Takes up remaining space */
+            position: relative;
+            overflow: hidden; /* Or auto if canvas can be larger than view */
+            background-color: #ffffff; /* Default canvas background */
+        }
+        [data-theme="dark"] .canvas-area {
+            background-color: #282c34; /* Darker canvas background */
+        }
+        #whiteboardCanvas {
+            display: block; /* Removes extra space below canvas */
+            cursor: crosshair; /* Default drawing cursor */
+            /* JS will set width/height */
+        }
+
+        /* --- Side Panel for Participants & Info --- */
+        .side-panel {
+            position: fixed;
+            top: 0; /* Or below header if header is fixed and not part of session-wrapper */
+            right: -300px; /* Start off-screen */
+            width: 280px;
+            height: 100%;
+            background-color: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            box-shadow: -3px 0 15px rgba(0,0,0,0.1);
+            padding: 15px;
+            padding-top: 70px; /* Space for main toolbar if it's fixed separately */
+            z-index: 90;
+            transition: right 0.3s ease-in-out;
+            overflow-y: auto;
+        }
+        .side-panel.open {
+            right: 0;
+        }
+        .side-panel-toggle { /* Button to open/close side panel */
+            position: fixed;
+            top: 80px; /* Adjust as needed */
+            right: 15px;
+            z-index: 95;
+            /* Use .btn-tool styling */
+        }
+        .side-panel h5 {
+            color: var(--orange-primary);
+            font-size: 1rem;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .participant-list li {
+            font-size: 0.9rem;
+            padding: 5px 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+        .participant-list img.avatar-sm {
+            width: 24px; height: 24px; border-radius: 50%; margin-right: 8px; object-fit: cover;
+        }
+        .participant-list .you-tag {
+            font-size: 0.75rem;
+            background-color: var(--orange-secondary);
+            color: white;
+            padding: 1px 5px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+
+
+        /* --- Page Switcher (Bottom Center) --- */
+        .page-switcher {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            padding: 8px 12px;
+            border-radius: 25px; /* Pill shape */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            z-index: 100;
+            display: flex; /* Will be populated by JS */
+            gap: 8px;
+        }
+        .page-switcher .btn-page {
+            /* Similar to btn-tool but perhaps smaller/circular */
+            background-color: var(--bg-subtle);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            min-width: 30px; height: 30px; line-height: 28px; text-align: center;
+            padding: 0;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .page-switcher .btn-page.active, .page-switcher .btn-page:hover {
+            background-color: var(--orange-primary);
+            color: white;
+            border-color: var(--orange-primary);
+        }
+        .page-switcher .btn-add-page { /* Special styling for add page */
+            background-color: var(--orange-secondary);
+            color: white;
+        }
+
+        /* AR Mode Specific UI (Popups, Buttons) */
+        #arModePopup {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background-color: var(--orange-primary); color: white;
+            padding: 25px 45px; border-radius: 10px; font-size: 1.6rem;
+            z-index: 10001; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.4);
+            display: none; /* Hidden by default */
+        }
+        #arModePopup p { margin-bottom: 5px; }
+        #exitArButton {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            z-index: 10000; /* Above 8thwall/AR canvas */
+            /* Use .btn-futuristic-outline styles */
+        }
+        .ar-scene-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10000; /* High z-index to cover everything */
+            display: none; /* Hidden by default */
+        }
+        body.ar-active .session-wrapper {
+            display: none; /* Hide normal UI when AR is active */
+        }
+        body.ar-active .ar-scene-container {
+            display: block; /* Show AR scene */
+        }
+        /* Ensure toolbar buttons don't get pointer events when AR is active and session-wrapper is hidden */
+        body.ar-active .main-toolbar button,
+        body.ar-active .main-toolbar input {
+            pointer-events: none;
+        }
+
+    </style>
+    <!-- 8th Wall script (if using) - place it as per their documentation, often in <head> -->
+   <!-- <script async src="//apps.8thwall.com/xrweb?appKey=YOUR_APP_KEY_HERE"></script> -->
+</head>
+<body>
+    <div class="session-wrapper">
+        <!-- Main Toolbar -->
+        <div class="main-toolbar">
+            <a href="profile.html" class="toolbar-brand" title="Back to My Space">ARW</a> <!-- Or full "AR Whiteboard" / Session Name -->
+
+            <div class="tool-group">
+                <button class="btn btn-tool active" id="tool-select" title="Select Tool"><img src="assets/icons/select.png" alt="Select"></button> <!-- Placeholder icon -->
+                <button class="btn btn-tool" id="tool-pen" title="Pen"><img src="assets/icons/pen.png" alt="Pen"></button>
+                <button class="btn btn-tool" id="tool-marker" title="Marker"><img src="assets/icons/marker.png" alt="Marker"></button>
+                <button class="btn btn-tool" id="tool-eraser" title="Eraser"><img src="assets/icons/eraser.png" alt="Eraser"></button>
+            </div>
+
+            <div class="tool-group">
+                <button class="btn btn-tool" id="tool-line" title="Line"><img src="assets/icons/line.png" alt="Line"></button>
+                <button class="btn btn-tool" id="tool-rect" title="Rectangle"><img src="assets/icons/rectangle.png" alt="Rect"></button>
+                <button class="btn btn-tool" id="tool-circle" title="Circle"><img src="assets/icons/circle.png" alt="Circle"></button>
+                <button class="btn btn-tool" id="tool-text" title="Text"><img src="assets/icons/text.png" alt="Text"></button>
+            </div>
+
+            <div class="tool-group">
+                <input type="color" id="colorPicker" value="#FFA500" title="Color Picker">
+                <input type="range" id="sizePicker" min="1" max="50" value="5" class="form-range align-middle" title="Brush Size">
+            </div>
+
+            <div class="tool-group ms-auto"> <!-- ms-auto pushes this group to the right -->
+                <button class="btn btn-tool" id="tool-undo" title="Undo"><img src="assets/icons/undo.png" alt="Undo"></button>
+                <button class="btn btn-tool" id="tool-redo" title="Redo"><img src="assets/icons/redo.png" alt="Redo"></button>
+            </div>
+
+            <div class="tool-group">
+                <button class="btn btn-futuristic-outline btn-sm" id="saveSessionBtn" title="Save Session">
+                    <img src="assets/icons/save.png" alt="Save" style="width:16px; height:16px; margin-right:5px;"> Save
+                </button>
+                <button class="btn btn-outline-danger btn-sm" id="clearBoardBtn" title="Clear Entire Board">
+                    <img src="assets/icons/clear.png" alt="Clear" style="width:16px; height:16px; margin-right:5px;"> Clear All
+                </button>
+            </div>
+
+            <!-- AR Button: Dynamically shown for participants -->
+            <button id="enterArBtn" class="btn btn-futuristic d-none" title="Enter AR Mode">
+                <img src="assets/icons/ar-icon-white.svg" alt="AR" style="height: 1em; margin-right: 5px;"> Enter AR
+            </button>
+
+            <!-- Participant Toggle Button -->
+            <button class="btn btn-tool" id="toggleSidePanelBtn" title="Participants & Info">
+                <img src="assets/icons/icons8-user-50.png" alt="Users">
+                <span class="badge bg-orange-primary rounded-pill ms-1" id="participantCountBadge">3</span> <!-- Dynamic count -->
+            </button>
+        </div>
+
+        <!-- Canvas Area -->
+        <div class="canvas-area">
+            <canvas id="whiteboardCanvas"></canvas>
+            <!-- Potential overlays for text input, shape resizing handles, etc. -->
+        </div>
+
+        <!-- Page Switcher (populated by JS) -->
+        <div class="page-switcher d-none" id="pageSwitcherContainer">
+            <!-- Example: <button class="btn btn-page active">1</button> -->
+            <!-- Example: <button class="btn btn-page btn-add-page" id="addPageBtn">+</button> (Host only) -->
+        </div>
+    </div>
+
+    <!-- Side Panel (Participants & Info) -->
+    <div class="side-panel" id="sessionSidePanel">
+        <h5>Session Info</h5>
+        <p class="small text-muted" id="sessionNameDisplay">Session: Project Phoenix</p>
+        <p class="small text-muted" id="sessionIdDisplay">ID: xyz-123-abc</p>
+        <hr>
+        <h5>Participants (<span id="participantCountDisplay">3</span>)</h5>
+        <ul class="list-unstyled participant-list" id="participantsUl">
+            <!-- JS will populate this -->
+            <li><img src="assets/images/team-member-placeholder.png" alt="User" class="avatar-sm"> InnovatorX <span class="you-tag">You</span> <span class="text-success small">(Host)</span></li>
+            <li><img src="assets/images/team-member-placeholder.png" alt="User" class="avatar-sm"> DesignGuru</li>
+            <li><img src="assets/images/team-member-placeholder.png" alt="User" class="avatar-sm"> CodeWizard</li>
+        </ul>
+        <hr>
+        <button class="btn btn-futuristic-outline btn-sm w-100" id="leaveSessionBtn">Leave Session</button>
+    </div>
+
+    <canvas id="arRenderCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: none;"></canvas>
+    
+    <div class="ar-scene-container" id="arSceneContainer">
+        <!--
+            sourceType: webcam; - Use the device camera
+            debugUIEnabled: false; - Hides AR.js debug UI
+            detectionMode: mono_and_matrix; - Detects monochrome markers and matrix codes (like QR)
+            matrixCodeType: 3x3; - Specific type of matrix code (Hiro is effectively a 3x3 matrix)
+            vr-mode-ui="enabled: false" - Disables the VR goggles icon
+            renderer="logarithmicDepthBuffer: true;" - Can help with z-fighting at different scales
+        -->
+        <a-scene id="arScene" embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;" vr-mode-ui="enabled: false" renderer="logarithmicDepthBuffer: true;">
+        
+            <a-assets>
+                <!-- The canvas for the whiteboard will be registered as an asset here by JS if needed,
+                     or directly used by THREE.CanvasTexture for the plane's material.
+                     For direct THREE.CanvasTexture usage with an existing A-Frame material,
+                     this <a-assets> might not be strictly necessary for the canvas itself. -->
+            </a-assets>
+
+            <!-- Hiro marker (most common AR.js default) -->
+            <a-marker preset="hiro" id="hiroMarker">
+                <!-- This plane will be textured with the whiteboard canvas -->
+                <a-plane id="arWhiteboardPlane" 
+                         position="0 0 0" 
+                         rotation="-90 0 0" 
+                        width="1.6" height="0.9" 
+                        material="shader: flat; transparent: true; opacity: 0.95; color: #FFF"> 
+                        <!-- Initial placeholder material. src will be set by JS -->
+                </a-plane>
+            </a-marker>
+        
+            <!-- Kanji marker (another AR.js default, if you want to test with it) -->
+            <!-- <a-marker preset="kanji" id="kanjiMarker">
+                <a-box position="0 0.5 0" material="color: green;"></a-box>
+            </a-marker> -->
+
+            <a-entity camera></a-entity> <!-- Essential for AR.js to manage the camera -->
+        </a-scene>
+    </div>  
+
+    <!-- AR Mode UI -->
+    <div id="arModePopup"><p>Entering AR Mode...</p><p>Get Ready!</p></div>
+    <button id="exitArButton" class="btn btn-futuristic-outline d-none">Exit AR</button>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Link tsParticles if re-added for any session-specific effects -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script> -->
+    <!-- Socket.IO client (needs to be served by your backend or from CDN) -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> 
+    <script src="js/theme-switcher.js"></script>
+    <!-- Core whiteboard JS files -->
+    <script src="js/whiteboard-core.js"></script> <!-- Drawing logic -->
+    <script src="js/session-manager.js"></script> <!-- Session state, Socket.IO, roles -->
+    <script src="js/ar-integration.js"></script> <!-- AR specific logic -->
+    <script src="js/session-ui.js"></script> <!-- Handles UI interactions for this page -->
+
+
+</body>
+</html>
